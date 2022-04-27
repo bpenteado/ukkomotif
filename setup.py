@@ -44,7 +44,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            "ukkonen-motif = ukkonen-motif.main:app",
+            "ukkomotif = ukkomotif.cli.main:main",
         ],
     },
 )
