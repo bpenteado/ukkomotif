@@ -8,7 +8,9 @@ BASE_DIR = Path(__file__).parent
 with open(Path(BASE_DIR, "requirements.txt"), "r") as file:
     required_packages = [ln.strip() for ln in file.readlines()]
 
-test_packages = []
+test_packages = [
+    "pytest==7.1.2"
+]
 
 dev_packages = []
 
@@ -16,7 +18,7 @@ docs_packages = []
 
 setup(
     name="ukkomotif",
-    version="0.1",
+    version="0.3",
     license="MIT",
     description="Ukkonen suffix tree tools for de novo motif discovery based on genome-wide evolutionary signature.",
     author="Bernardo Penteado",
@@ -34,9 +36,11 @@ setup(
         "License :: OSI Approved :: MIT License",
         "Programming Language :: Python :: 3",
     ],
-    python_requires="==3.7.10",
+    python_requires=">3.7",
     packages=find_packages(),
-    install_requires=[required_packages],
+    install_requires=[
+        "click==8.1.2"
+    ],
     extras_require={
         "test": test_packages,
         "dev": test_packages + dev_packages + docs_packages,
