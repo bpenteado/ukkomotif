@@ -2,12 +2,6 @@ from pathlib import Path
 
 from setuptools import find_packages, setup
 
-BASE_DIR = Path(__file__).parent
-
-# Load packages from requirements.txt
-with open(Path(BASE_DIR, "requirements.txt"), "r") as file:
-    required_packages = [ln.strip() for ln in file.readlines()]
-
 test_packages = [
     "pytest==7.1.2"
 ]
@@ -18,7 +12,7 @@ docs_packages = []
 
 setup(
     name="ukkomotif",
-    version="0.3",
+    version="0.5",
     license="MIT",
     description="Ukkonen suffix tree tools for de novo motif discovery based on genome-wide evolutionary signature.",
     author="Bernardo Penteado",
