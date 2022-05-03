@@ -2,14 +2,14 @@
 Ukkonen Suffix Tree for motif discovery basen on genome-wide evolutionary signature.
 """
 
-def stringer(a: str) -> str:
+def stringer(input_string: str) -> str:
     """
     Type filter that raises an error for non-string inputs.
 
-    :param a: input to be filtered.
+    :param input_string: input to be filtered.
 
-    :raises TypeError: if a not a string.
+    :raises TypeError: if input_string is not a string.
     """
-    if not isinstance(a, str):
+    if not isinstance(input_string, str):
         raise TypeError("Input must be a string")
-    return a
+    return input_string

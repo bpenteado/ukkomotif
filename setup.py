@@ -15,7 +15,7 @@ dev_packages = []
 docs_packages = []
 
 setup(
-    name="ukkonen-motif",
+    name="ukkomotif",
     version="0.1",
     license="MIT",
     description="Ukkonen suffix tree tools for de novo motif discovery based on genome-wide evolutionary signature.",
