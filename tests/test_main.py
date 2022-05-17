@@ -12,3 +12,6 @@ def test_stringer():
         main.stringer(1.1)
         main.stringer([1])
         main.stringer(1)
+
+def test_suffix_tree():
+    assert (main.SuffixTree("AAATGGCCGCGCCG#").remainder == 0)

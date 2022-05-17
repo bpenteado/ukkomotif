@@ -4,15 +4,37 @@ Ukkonen Suffix Tree for motif discovery basen on genome-wide evolutionary signat
 
 class Edge:
     """ Edge of a Suffix Tree node """
-    def __init__(self, data: list):
-        self.data = data
+    def __init__(self, start: int):
+        self.start = start
+        self.end = None
         self.child_node = None
 
     def __bool__(self):
         return True
 
-    def get_length(self):
-        return self.data[-1] - self.data[0]
+    def get_length(self, current_step: int):
+        if self.end is None:
+            return current_step  - self.start
+        return self.end - self.start + 1
+
+    def split_edge(self, split_index: int, start_index: int):
+        # save current end child_node
+        whole_edge_end = self.end
+        whole_edge_child_node = self.child_node
+        # set end index
+        self.end = self.start + split_index
+        # set child node
+        self.child_node = Node()
+        # add split edge to child node
+        split_edge = Edge(self.start + split_index + 1)
+        split_edge.end = whole_edge_end
+        split_edge.child_node = whole_edge_child_node
+        self.child_node.add_edge(split_edge)
+        # add new edge to child node
+        new_edge = Edge(start_index)
+        self.child_node.add_edge(new_edge)
+        # return newly created node (child node)
+        return self.child_node
 
 class Node:
     """ Suffix Tree node """
@@ -20,35 +42,52 @@ class Node:
         self.edges = []
         self.suffix_link = None
 
+    def add_edge(self, edge: Edge):
+        self.edges += [edge]
+
 class SuffixTree:
     """ Suffix Tree """
-    def __init__(self):
+    def __init__(self, string: str):
         self.root = Node()
+        self.string = string
+        self._build()
 
     def _match_edge(self, char):
         """ Returns edge from active node that begins with char"""
         for edge in self.active_node.edges:
-            if self.string[edge.data[0]] == char:
+            if self.string[edge.start] == char:
                     return edge
         raise Exception("Edge not found")
     
     def _lookup_edge(self, char):
-        """" Checks if implicit edge already exists at active_point in the Suffix Tree """
+        """" Checks if an implicit edge already exists at the active point of the Suffix Tree """
         if self.active_length == 0:
             try:
                 return self._match_edge(char)
             except Exception:
                 return None
         else:
-            if self._get_active_point_char() == char:
+            if self._get_active_point_next_char() == char:
                 return self.active_edge
             return None
 
-    def _get_active_point_char(self):
-        return self.string[self.active_edge.data[self.active_length]]
+    def _get_active_point_next_char(self):
+        # TODO: handle case where active_edge is null
+        return self.string[self.active_edge.start + self.active_length]
     
-    def _insert_node(self):
-        pass
+    def _insert_suffix(self):
+        if self.active_length == 0:
+            # add edge straight to active node
+            new_edge = Edge(self.step - 1)
+            self.active_node.add_edge(new_edge)
+            if self.active_node == self.root:
+                return None
+            return self.active_node
+        else:
+            # split active_edge and return new node
+            # TODO: what if the active point is at the "end" of an open edge?
+            new_node = self.active_edge.split_edge(self.active_length - 1, self.step -1)
+            return new_node
 
     def _update_active_point_no_insert(self, existing_edge: Edge):
         self.remainder += 1
@@ -60,10 +99,7 @@ class SuffixTree:
         self.active_length += 1
 
         # update active point if it is at the end of an edge
-        if self.active_edge.get_length() == self.active_length:
-            self.active_node = self.active_edge.child_node
-            self.active_edge = None
-            self.active_length = 0
+        self._check_and_canonize(self.active_edge)
 
     def _update_active_point_from_root(self):
         self.remainder -= 1
@@ -71,18 +107,45 @@ class SuffixTree:
         if self.active_length != 0:
             self.active_length -= 1
         
-        self.active_edge = self._match_edge(self.string[self.step - self.remainder])
+        #TODO: Shouldnt this be the same as from chil canonization
+        self.active_edge = self._match_edge(self.string[self.step - self.remainder - 1])
     
     def _update_active_point_from_child(self):
         self.remainder -= 1
 
+        # update active node
         if self.active_node.suffix_link is not None:
             self.active_node = self.active_node.suffix_link
         else:
             self.active_node = self.root
 
-    def build(self, string: str):
-        self.string = string
+        # update active edge (canonizing if needed)
+        if self.active_edge is not None:
+            model_edge = self.active_edge
+            self.active_edge = self._match_edge(self.string[model_edge.start])
+            self._check_and_canonize(model_edge)
+
+    def _check_and_canonize(self, model_edge: Edge):
+        """ Checks if the active point overflows or is at the end of a non-leaf edge and update active point if so (canonize)"""
+        remaining_edge_start = model_edge.start
+        while self.active_length >= self.active_edge.get_length(self.step):
+            limiting_edge_length = self.active_edge.get_length(self.step)    
+            if self.active_edge.child_node is not None:
+                self.active_node = self.active_edge.child_node
+                if self.active_length == limiting_edge_length:
+                    self.active_edge = None
+                    self.active_length = 0
+                    return
+                else:
+                    remaining_edge_start += limiting_edge_length
+                    self.active_edge = self._match_edge(self.string[remaining_edge_start])
+                    self.active_length -= limiting_edge_length
+            else:
+                if self.active_length > limiting_edge_length:
+                    raise Exception("Unexpected error: tree overflow")
+                return
+
+    def _build(self):
         self.step = 1
         self.active_node = self.root
         self.active_length =  0
@@ -90,34 +153,52 @@ class SuffixTree:
         self.remainder = 1
 
         while(self.step <= len(self.string)):
+            # reset remainder if all suffixes have been added in the previous step
             if(self.remainder == 0): 
                 self.remainder = 1
-            previous_inserted_node = None
+            previous_internal_node = None # resetting for the new step
             while (self.remainder != 0):
-                existing_edge = self._lookup_edge(self.string(self.step-1))
+                # check if the current suffix is implicitly contained in the tree 
+                existing_edge = self._lookup_edge(self.string[self.step-1])
                 if existing_edge:
+                    # do nothing, update active point (no insert), and move to next step
+                    if previous_internal_node is not None:
+                        if previous_internal_node.suffix_link is None:
+                            previous_internal_node.suffix_link = self.active_node
                     self._update_active_point_no_insert(existing_edge)
                     self.step += 1
                     break
                 else:
-                    # insert new node
-                    new_node = self._insert_node()
+                    # insert current suffix at active point and return newly created node (None if no node was created)
+                    internal_node = self._insert_suffix()
 
                     # update active point
                     if self.active_node == self.root:
-                        self._update_active_point_from_root()
+                        self._update_active_point_from_root()  # update rule for edge insert at root node
                     else:
-                        self._update_active_point_from_child()
+                        self._update_active_point_from_child()  # update rule for edge insert at non-root node
 
                     # add suffix link if new node is not the first to be added in the current step
-                    if previous_inserted_node is not None:
-                        previous_inserted_node.suffix_link = new_node
-                    previous_inserted_node = new_node
+                    if internal_node is not None and previous_internal_node is not None:
+                        previous_internal_node.suffix_link = internal_node
+
+                    if internal_node is not None:
+                        previous_internal_node = internal_node
 
                     if self.remainder == 0:
                         self.step += 1
 
+    def count_leaves(self, node: Node):
+        count = 0
+        for edge in node.edges:
+            if edge.child_node is None:
+                count += 1
+            else:
+                count += self.count_leaves(edge.child_node)
+        return count
 
+if __name__ == "__main__":
+    a = SuffixTree("AAATTGGGCGCCCCGCGCGGCGCGTTTTTTTTATTAAAAAAAAAAAGGGGGCGCGCGCCGTCTCTCTATATAGGGCGCGCC#")
 
 
 ########################################################################################
