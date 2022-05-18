@@ -1,11 +1,9 @@
-"""
-Ukkonen Suffix Tree for motif discovery basen on genome-wide evolutionary signature.
-"""
+"""Ukkonen Suffix Tree for motif discovery basen on genome-wide evolutionary signature."""
 
-from typing import Tuple
+from typing import Tuple, Optional
 
 class Edge:
-    """ Edge of a Suffix Tree node """
+    """Edge of a Suffix Tree node"""
     def __init__(self, start: int):
         self.start = start
         self.end = None
@@ -14,32 +12,46 @@ class Edge:
     def __bool__(self):
         return True
 
-    def get_length(self, current_step: int):
+    def get_length(self, current_step: int) -> int:
+        """
+        Returns edge length, including for open edges.
+
+        :param current_step: current step of the Suffix Tree build (Ukkonen algorithm)
+        """
         if self.end is None:
             return current_step  - self.start
         return self.end - self.start + 1
 
-    def split_edge(self, split_index: int, start_index: int):
-        # save current end child_node
+    def split_edge(self, split_index: int, start_index: int) -> 'Node':
+        """
+        Splits edge, adding a child node with two edges (a new one and the second half of the edge that was split) to 
+        the first half of the split edge, and returns the new node.
+    
+        :param split_index: edge index for split (0 is the first character of the edge)
+        :param start_index: string index marking the start of the new edge
+        """
+        # save end and child_node of the whole edge
         whole_edge_end = self.end
         whole_edge_child_node = self.child_node
-        # set end index
+        
+        # set the first half of split edge
         self.end = self.start + split_index
-        # set child node
         self.child_node = Node()
-        # add split edge to child node
-        split_edge = Edge(self.start + split_index + 1)
-        split_edge.end = whole_edge_end
-        split_edge.child_node = whole_edge_child_node
-        self.child_node.add_edge(split_edge)
-        # add new edge to child node
+
+        # set the second half of the split edge and add it to the child node of the first half
+        second_split_edge = Edge(self.start + split_index + 1)
+        second_split_edge.end = whole_edge_end
+        second_split_edge.child_node = whole_edge_child_node
+        self.child_node.add_edge(second_split_edge)
+
+        # add new edge to the child node of the first half of the split edge
         new_edge = Edge(start_index)
         self.child_node.add_edge(new_edge)
-        # return newly created node (child node)
+
         return self.child_node
 
 class Node:
-    """ Suffix Tree node """
+    """Suffix Tree node"""
     def __init__(self):
         self.edges = []
         self.suffix_link = None
@@ -48,22 +60,29 @@ class Node:
         self.edges += [edge]
 
 class SuffixTree:
-    """ Suffix Tree """
+    """ 
+    Generalized Suffix Tree built with to Ukkonen's algorithm. 
+    
+    :param string: text input with strings to be parsed. 
+    :param separation_symbol: character that separates strings in the text input.
+    """
     def __init__(self, string: str, separation_symbol: str):
         self.root = Node()
-        self.string = string
         self.symbol = separation_symbol
+        if string[-1] != self.symbol:
+            raise ValueError("Input string must end with the separation symbol. Please check inputs.")
+        self.string = string
         self._build()
 
     def _match_edge(self, node: Node, char: str) -> Edge:
-        """ Returns edge from input node that begins with char"""
+        """Returns edge from input node that begins with char."""
         for edge in node.edges:
             if self.string[edge.start] == char:
-                    return edge
+                return edge
         raise Exception("Edge not found")
     
-    def _lookup_edge(self, char):
-        """" Checks if an implicit edge already exists at the active point of the Suffix Tree """
+    def _lookup_edge(self, char) -> Optional[Edge]:
+        """"Checks if an implicit edge already exists at the active point of the Suffix Tree."""
         if self.active_length == 0:
             try:
                 return self._match_edge(self.active_node, char)
@@ -74,29 +93,30 @@ class SuffixTree:
                 return self.active_edge
             return None
 
-    def _get_active_point_next_char(self):
-        # TODO: handle case where active_edge is null
+    def _get_active_point_next_char(self) -> str:
+        """Returns the character in the string after the active point."""
         return self.string[self.active_edge.start + self.active_length]
     
-    def _insert_suffix(self):
-        if self.active_length == 0:
-            # add edge straight to active node
+    def _insert_suffix(self) -> Optional[Node]:
+        """
+        Inserts current suffix (new edge) after the active point of the tree. 
+        If insertion is not made from root, returns node from which insertion was made (condition for suffix link).
+        """
+        if self.active_length == 0:  # insert straight at active node
             new_edge = Edge(self.step - 1)
             self.active_node.add_edge(new_edge)
             if self.active_node == self.root:
                 return None
             return self.active_node
         else:
-            # split active_edge and return new node
-            # TODO: what if the active point is at the "end" of an open edge?
             new_node = self.active_edge.split_edge(self.active_length - 1, self.step -1)
             return new_node
 
     def _update_active_point_no_insert(self, existing_edge: Edge):
+        """Active point update rule when no insertion is made (suffix is already in the tree)."""
         self.remainder += 1
-        
-        # make sure existing_edge is active_edge
-        if self.active_edge == None or self.active_length == 0:
+
+        if self.active_edge == None or self.active_length == 0: # make sure existing_edge is active_edge
             self.active_edge = existing_edge
 
         self.active_length += 1
@@ -105,34 +125,34 @@ class SuffixTree:
         self._check_and_canonize(self.active_edge)
 
     def _update_active_point_from_root(self):
+        """Active point update rule when insertion is made from root."""
         self.remainder -= 1
-
         if self.active_length != 0:
             self.active_length -= 1
-        
-        #TODO: Shouldnt this be the same as from chil canonization
-        if self.remainder != 0 and self.active_length != 0:
+        if self.active_length != 0:
             self.active_edge = self._match_edge(self.active_node, self.string[self.step - self.remainder])
         else:
             self.active_edge = None
     
     def _update_active_point_from_child(self):
+        """Active point update rule when insertion is made from a node other than root."""
         self.remainder -= 1
 
-        # update active node
         if self.active_node.suffix_link is not None:
             self.active_node = self.active_node.suffix_link
         else:
             self.active_node = self.root
 
-        # update active edge (canonizing if needed)
         if self.active_edge is not None:
             model_edge = self.active_edge
             self.active_edge = self._match_edge(self.active_node, self.string[model_edge.start])
-            self._check_and_canonize(model_edge)
+            self._check_and_canonize(model_edge) # canonize suffix if needed
 
     def _check_and_canonize(self, model_edge: Edge):
-        """ Checks if the active point overflows or is at the end of a non-leaf edge and update active point if so (canonize)"""
+        """
+        Checks if the active point overflows or is at the end of a non-leaf edge and update active point if so.
+        This is equivalent to Ukkonen's canonize function.
+        """
         remaining_edge_start = model_edge.start
         while self.active_length >= self.active_edge.get_length(self.step):
             limiting_edge_length = self.active_edge.get_length(self.step)    
@@ -152,6 +172,7 @@ class SuffixTree:
                 return
 
     def _build(self):
+        """Core tree construction method"""
         self.step = 1
         self.active_node = self.root
         self.active_length =  0
@@ -166,8 +187,8 @@ class SuffixTree:
             while (self.remainder != 0):
                 # check if the current suffix is implicitly contained in the tree 
                 existing_edge = self._lookup_edge(self.string[self.step-1])
-                if existing_edge:
-                    # do nothing, update active point (no insert), and move to next step
+                if existing_edge and self.string[self.step-1] != self.symbol:
+                    # do nothing, add suffix link if needed, update active point (no insert), and move to next step
                     if previous_internal_node is not None:
                         if previous_internal_node.suffix_link is None:
                             previous_internal_node.suffix_link = self.active_node
@@ -232,7 +253,11 @@ class SuffixTree:
         return match_edge
 
     def count_substring(self, substring: str) -> int:
-        """Counts the number of occurences of a substring in the Suffix Tree"""
+        """
+        Counts the number of occurences of a substring in the Suffix Tree.
+        
+        :param substring: substring to query.
+        """
         substring_edge = self._find_substring(substring)
         if substring_edge is None:
             return 0
@@ -243,8 +268,8 @@ class SuffixTree:
             return self._count_leaves(substring_edge.child_node)
 
 if __name__ == "__main__":
-    a = SuffixTree("AAAATCTACGCGGCGCGCGCTGGGCTA!AAAATCTACGCTTTTCGCGCTGGGCTA?TTTAAAATCTACGCGGCGCGCGCTGG#", "#")
-    
+    a = SuffixTree("AAAATCTACGCGGCGCGCGCTGGGCTA#AAAATCTACGCTTTTCGCGCTGGGCTA#TTTAAAATCTACGCGGCGCGCGCTGG#", "#")
+
 ########################################################################################
 def stringer(input_string: str) -> str:
     """
