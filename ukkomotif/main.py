@@ -2,6 +2,8 @@
 Ukkonen Suffix Tree for motif discovery basen on genome-wide evolutionary signature.
 """
 
+from typing import Tuple
+
 class Edge:
     """ Edge of a Suffix Tree node """
     def __init__(self, start: int):
@@ -52,9 +54,9 @@ class SuffixTree:
         self.string = string
         self._build()
 
-    def _match_edge(self, char):
-        """ Returns edge from active node that begins with char"""
-        for edge in self.active_node.edges:
+    def _match_edge(self, node: Node, char: str) -> Edge:
+        """ Returns edge from input node that begins with char"""
+        for edge in node.edges:
             if self.string[edge.start] == char:
                     return edge
         raise Exception("Edge not found")
@@ -63,7 +65,7 @@ class SuffixTree:
         """" Checks if an implicit edge already exists at the active point of the Suffix Tree """
         if self.active_length == 0:
             try:
-                return self._match_edge(char)
+                return self._match_edge(self.active_node, char)
             except Exception:
                 return None
         else:
@@ -108,7 +110,10 @@ class SuffixTree:
             self.active_length -= 1
         
         #TODO: Shouldnt this be the same as from chil canonization
-        self.active_edge = self._match_edge(self.string[self.step - self.remainder - 1])
+        if self.remainder != 0 and self.active_length != 0:
+            self.active_edge = self._match_edge(self.active_node, self.string[self.step - self.remainder])
+        else:
+            self.active_edge = None
     
     def _update_active_point_from_child(self):
         self.remainder -= 1
@@ -122,7 +127,7 @@ class SuffixTree:
         # update active edge (canonizing if needed)
         if self.active_edge is not None:
             model_edge = self.active_edge
-            self.active_edge = self._match_edge(self.string[model_edge.start])
+            self.active_edge = self._match_edge(self.active_node, self.string[model_edge.start])
             self._check_and_canonize(model_edge)
 
     def _check_and_canonize(self, model_edge: Edge):
@@ -138,7 +143,7 @@ class SuffixTree:
                     return
                 else:
                     remaining_edge_start += limiting_edge_length
-                    self.active_edge = self._match_edge(self.string[remaining_edge_start])
+                    self.active_edge = self._match_edge(self.active_node, self.string[remaining_edge_start])
                     self.active_length -= limiting_edge_length
             else:
                 if self.active_length > limiting_edge_length:
@@ -188,17 +193,54 @@ class SuffixTree:
                     if self.remainder == 0:
                         self.step += 1
 
-    def count_leaves(self, node: Node):
+    def _count_leaves(self, node: Node) -> int:
+        """Counts number of leaf nodes below input node"""
         count = 0
         for edge in node.edges:
             if edge.child_node is None:
                 count += 1
             else:
-                count += self.count_leaves(edge.child_node)
+                count += self._count_leaves(edge.child_node)
         return count
 
+    def _find_substring(self, substring: str) -> Tuple[Node, Edge]:
+        """Searches for substring and returns its edge if found"""
+        current_node = self.root
+        try:
+            match_edge = self._match_edge(current_node, substring[0])
+        except Exception:
+            return None
+        steps_in_edge = 0
+        for i, character in enumerate(substring):
+            if self.string[match_edge.start + steps_in_edge] == character:
+                steps_in_edge += 1
+                if steps_in_edge == match_edge.get_length(len(self.string)):
+                    if i == len(substring) - 1:
+                        return match_edge
+                    else:
+                        if match_edge.child_node is None:
+                            return None
+                        current_node = match_edge.child_node
+                        try:
+                            match_edge = self._match_edge(current_node, substring[i+1]) 
+                        except Exception:
+                            return None
+                        steps_in_edge = 0
+        return match_edge
+
+    def count_substring(self, substring: str) -> int:
+        """Counts the number of occurences of a substring in the Suffix Tree"""
+        substring_edge = self._find_substring(substring)
+        if substring_edge is None:
+            return 0
+        
+        if substring_edge.child_node is None:
+            return 1
+        else:
+            return self._count_leaves(substring_edge.child_node)
+
 if __name__ == "__main__":
-    a = SuffixTree("AAATTGGGCGCCCCGCGCGGCGCGTTTTTTTTATTAAAAAAAAAAAGGGGGCGCGCGCCGTCTCTCTATATAGGGCGCGCC#")
+    a = SuffixTree("GCCACGGGAGCCGGAACCCCGAAAGGAGAAATATTAATATAAATATAAATATTAATATAAATATAAATATAAATATAAATATATTTTAATATAATATAATATAATATATAATATATTATATAAATATAATATATAAATAATATAATAAAATATTTTAATATATATATAATATAATATAATTATTATTATAATTTAATATAAATTATTATTATAATTTAATATAATAAATAAATAAATAATTATAATTATAATTATAATTATAATCTCAATATATAAATGATAAATTATTATAAATACAAAGGAAATAATTGATTTTTAAAATATATTTAATAAAATATATAATATAAATTATACTTTTTTTGTTATTATATAATAATTATATTAATATATTTAATAGAATTAAACTCCTTCGGCCGGACTATTATTCATTTTATATATTAATGATAAATCATTAATTATTATTAATAAATTTATTTATAATATTTAATTTTATATATTATTATTTATAATAAAAAAAATTATATTATAACAATTTAATTTTAATTTTTATTTTTAAATTATAAAATTAATAATTTATTTGTTTAAATAAAATTTATAACTCCTTCGGGGTTCGGCCGGACTATTAATATAAATAAATAATAAATATTTATAATAAAATAATATACATCTTCTTTAAATAAAAAAAGGGGACATTATAAATAGTATATAAATATATTATATCTTTTTTATTATTATTATTAATAAATAATAATAATAATTTATATATTTATAATATATTTAATAGTTCCGGGGCCCGGCCACGGGAGCCGGAACCCCGAAAGGAGAATGTATTATAATTATTACATATAATTATTATTATTCACTTCTTATTAAAAATAATACTCTATATAATTTATATAATTTATTTTAATATATATATATTTATATATAATATAATATATATATTTATTTATTATAATCATTTTTTTTTAACTTAAAATAAAACTTATTATAATTTATATAATTTATAATTTTTATATAAAAATAATTATATAATTTTTATTTATTTATATAATAATAATATTATTTGTTATATATTATATATTATATATATAATAAATAAATAAATAATAAATAATAATAATAAGGATATAGTTTAATGGTAAAACAGTTGATTTCAAATCAATCATTAGGAGTTCGAATCTCTTTATCCTTGATAATAATAATAAAAATATGTATTTATTTAATTATTTTAATATTTCTCCTTTCGGGGTTCCGGCTCCCGTGGCCGGGCCCCGGAACTATTAATATAATATAATATAATATAAATATTCATTTATCTTTTTTTTAATATTCTTAATTAATTAATTAATTAATATATTAATTATAAAAAATATATTATAATTTTATTATTAATAAGTATAAATATATTATTAATAATAATTTATTAAAAATATATTATTATAATATATTAATATATCATAATTATAATCAATATTATATTATTTAATTTTATAATACTTAATTATTAATATATTATTCATATATATATAAATTAAATTAAATTAATTATATTGAATATATAAATATATATATATATAAATATATAAAAAATTATATAAATTATTTTAAGTAAAAATAATATTAATAAAAATTATACAATAATAATAATAAATATTCATTATTATTTAATTAATATCTCCTTTACTTCTTTTTCCTCCGTTGAGGACTTATTATTAAGTATATTATTATATACTACTTAAGATTATATATATAATATATATATATATATTATATATAAAATATAAATATATAAATAATATAAAAATTAATAAAATAAATAAAATAAATTAGTCCGATCGAATCCCCTATTTAATTAAATTAAATTAAATTAAGAAAGAGATAAATTTATATAAAATATTATTTATAATTAATTATAATTAAATTATAATATAATATAATATAAATAATAATATAATAAAAATAAAAATAAAATAATATTAGATTATATTATATAATTTATATAATTTTTTAATAATAATAATAAATAAGTTTATTTATAATTATAAATATAAATATAAATATAAATAAAGAAGGTATTATATTTTATAAAATATAATAATAATACAAAATTTATATTTTAATAAATATTAATATAAGTTTAAAGTTCCGGGGCCCGGCACGGGAGCCGGAACCCCGAAAGGAGAAATAAATAATATATTTATAAAAAATTAAATAAATAAATATTATCTATTTAAAAATAAATATAATATAATATAATATAATAATTCTAAATATAAATAATATTTATTATAATTATTATAATAATTGTATTATTTATTAATAATATATATAATTATATTAAAACTAATATTACATTATTTTGTATATTTAAACAATTAAATTGATTATTCTTATTTGTAATCTTTATTTATTTTATTATATCTTATTAATGATAAATTATAATTATTATTAAAATAATAATTTACTTCTTTTGATATAAAAATAAAATAATATAGTTCCGGGGCCCGGCCACGGGAGCCGGAACCCCGGAAGGAGATAAATATATTATATTTTTATTCCTACCTATTAAAGGTAAAGACTCGATTCTCATAATTAAATTTATATCCTTCGGCCGGATTAATTTATTTTATTTATATTTATATTTATAGTGAATACCTTTTTTAATATTTATTTTTAATATTTATTTTTAATATTTTATTTTTAATAAAATATAATCTTGTAAGTAAGAAAAGAATTTCGGTGATTGGAACCTTGAAAGGATAAATTTCTTATTTATTATAATATTTATATTAATAGTTCCGGGGCCCGGCCACGGGAGCCGGAACCCCGAAAGGAGTATTATTAAACATTTAATATATTATATTAATATTTAATTTAAATGATTAATATATTATTATAATAATATTTATTTTATATTAAAATATTATAATTAATATATATATATTTATTTTAATAATATTATTATTATTATTATTAAAATTATTATTTTTATAAATATATATATATATATATATATATTATTTTTATTCTTATATAAATTATATAAAAAAAATATATATAATATATAATTAATTAATATATATTATTTAAATTATATATTATTTAAAATACTTTTTATATTATATCTTCTTTAAATTAAAATATAATTATTATTTATATTATAATTATTTATGAAATATTATTATTAAA#")
 
 
 ########################################################################################
