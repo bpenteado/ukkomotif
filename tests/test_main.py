@@ -19,9 +19,9 @@ def test_suffix_tree():
     
     # tree build tests
     assert (SuffixTree(test_string_single, "#").remainder == 0)
-    assert (SuffixTree(test_string_single, "#")._count_leaves() == len(test_string_single))
+    assert (SuffixTree(test_string_single, "#").count_leaves() == len(test_string_single))
     assert (SuffixTree(test_string_multiple, "#").remainder == 0)
-    assert (SuffixTree(test_string_multiple, "#")._count_leaves() == len(test_string_multiple))
+    assert (SuffixTree(test_string_multiple, "#").count_leaves() == len(test_string_multiple))
 
     with pytest.raises(ValueError):
         SuffixTree(test_string_single[:-1], "#")

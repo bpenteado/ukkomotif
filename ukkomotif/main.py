@@ -224,18 +224,6 @@ class SuffixTree:
                     if self.remainder == 0:
                         self.step += 1
 
-    def _count_leaves(self, node: Optional[Node] = None) -> int:
-        """Counts number of leaf nodes below input node"""
-        if node is None: 
-            node = self.root
-        count = 0
-        for edge in node.edges:
-            if edge.child_node is None:
-                count += 1
-            else:
-                count += self._count_leaves(edge.child_node)
-        return count
-
     def _find_substring(self, substring: str) -> Tuple[Node, Edge]:
         """Searches for substring and returns its edge if found"""
         current_node = self.root
@@ -263,6 +251,22 @@ class SuffixTree:
                 return None
         return match_edge
 
+    def count_leaves(self, node: Optional[Node] = None) -> int:
+        """
+        Counts number of leaf nodes below input node
+        
+        :param node: node below which number of leaves will be counted, defaults to root node.
+        """
+        if node is None: 
+            node = self.root
+        count = 0
+        for edge in node.edges:
+            if edge.child_node is None:
+                count += 1
+            else:
+                count += self.count_leaves(edge.child_node)
+        return count
+
     def count_substring(self, substring: str) -> int:
         """
         Counts the number of occurences of a substring in the Suffix Tree.
@@ -276,10 +280,10 @@ class SuffixTree:
         if substring_edge.child_node is None:
             return 1
         else:
-            return self._count_leaves(substring_edge.child_node)
+            return self.count_leaves(substring_edge.child_node)
 
 if __name__ == "__main__":
-    a = SuffixTree("AAATGGCCGCGCCG#AAATGGCCGCGCCG#GGCTGTTGAGCGCGCGGGA#", "#")
+    a = SuffixTree("AAATGGCCGCGCCG#AAATGGCCGCGCCG#AAATGGCCGCGCCG#", "#")
 
 ########################################################################################
 def stringer(input_string: str) -> str:
