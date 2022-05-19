@@ -135,9 +135,10 @@ class SuffixTree:
             self.active_length -= 1
         if self.active_length != 0:
             self.active_edge = self._match_edge(self.active_node, self.string[self.step - self.remainder])
+            self._check_and_canonize(self.active_edge) # canonize suffix if needed
         else:
             self.active_edge = None
-    
+            
     def _update_active_point_from_child(self):
         """Active point update rule when insertion is made from a node other than root."""
         self.remainder -= 1
@@ -223,8 +224,10 @@ class SuffixTree:
                     if self.remainder == 0:
                         self.step += 1
 
-    def _count_leaves(self, node: Node) -> int:
+    def _count_leaves(self, node: Optional[Node] = None) -> int:
         """Counts number of leaf nodes below input node"""
+        if node is None: 
+            node = self.root
         count = 0
         for edge in node.edges:
             if edge.child_node is None:
@@ -276,9 +279,8 @@ class SuffixTree:
             return self._count_leaves(substring_edge.child_node)
 
 if __name__ == "__main__":
-    a = SuffixTree("AAAATCTACGCGGCGCGCGCTGGGCTA#AAAATCTACGCTTTTCGCGCTGGGCTA#TTTAAAATCTACGCGGCGCGCGCTGG#", "#")
+    a = SuffixTree("AAATGGCCGCGCCG#AAATGGCCGCGCCG#GGCTGTTGAGCGCGCGGGA#", "#")
 
-#TODO: convince yourself that the generalized suffix tree workaround (ignore existing edges when suffix ends with symbol)
 ########################################################################################
 def stringer(input_string: str) -> str:
     """

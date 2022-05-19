@@ -1,5 +1,5 @@
-# import sys
-# sys.path.append("/Users/bpenteado/ukkomotif")
+import sys
+sys.path.append("/Users/bpenteado/ukkomotif")
 
 from click.testing import CliRunner
 
