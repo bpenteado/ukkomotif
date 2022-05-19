@@ -1,6 +1,6 @@
 """Weeder algorithm"""
 
-from .main import SuffixTree, Node
+from .ukkonen import SuffixTree, Node
 from typing import Optional
 
 class Weeder:
