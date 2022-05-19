@@ -1,6 +1,6 @@
 """Weeder algorithm"""
 
-from main import SuffixTree, Node
+from .main import SuffixTree, Node
 from typing import Optional
 
 class Weeder:
@@ -43,5 +43,3 @@ class Weeder:
 if __name__ == "__main__":
     tree = SuffixTree("AAATGGCCGCGCCG#AAATGGCCGCGCCG#GGCTGTTGAGCGCGCGGGA#", "#")
     results = Weeder(tree, 3).patterns
-
-    a = 1
