@@ -68,10 +68,14 @@ class SuffixTree:
     """
     def __init__(self, string: str, separation_symbol: str):
         self.root = Node()
-        self.symbol = separation_symbol
-        if string[-1] != self.symbol:
-            raise ValueError("Input string must end with the separation symbol. Please check inputs.")
         self.string = string
+        self.symbol = separation_symbol
+        if self.string[-1] != self.symbol:
+            raise ValueError("Input string must end with the separation symbol. Please check inputs.")
+        if self.string.count(self.symbol) > 1:
+            self.generalized = True
+        else:
+            self.generalized = False
         self._build()
 
     def _match_edge(self, node: Node, char: str) -> Edge:
@@ -187,7 +191,11 @@ class SuffixTree:
             while (self.remainder != 0):
                 # check if the current suffix is implicitly contained in the tree 
                 existing_edge = self._lookup_edge(self.string[self.step-1])
-                if existing_edge and self.string[self.step-1] != self.symbol:
+                if self.generalized == False:
+                    no_insert_condition = existing_edge
+                else:
+                    no_insert_condition = (existing_edge and self.string[self.step-1] != self.symbol)
+                if no_insert_condition:
                     # do nothing, add suffix link if needed, update active point (no insert), and move to next step
                     if previous_internal_node is not None:
                         if previous_internal_node.suffix_link is None:
@@ -270,6 +278,7 @@ class SuffixTree:
 if __name__ == "__main__":
     a = SuffixTree("AAAATCTACGCGGCGCGCGCTGGGCTA#AAAATCTACGCTTTTCGCGCTGGGCTA#TTTAAAATCTACGCGGCGCGCGCTGG#", "#")
 
+#TODO: convince yourself that the generalized suffix tree workaround (ignore existing edges when suffix ends with symbol)
 ########################################################################################
 def stringer(input_string: str) -> str:
     """
