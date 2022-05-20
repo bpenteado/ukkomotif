@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/bpenteado/ukkomotif")
-
 from ukkomotif.parser import Parser
 
 import pytest

@@ -1,7 +1,5 @@
 """Utility for reading and parsing DNA and conservation input sequences"""
 
-import os
-
 class Parser:
     """Parser utility class"""
     def __init__(self):

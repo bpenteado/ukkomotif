@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/bpenteado/ukkomotif")
-
 from ukkomotif.weeder import Weeder
 from ukkomotif.ukkonen import SuffixTree
 

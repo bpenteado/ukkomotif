@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/bpenteado/ukkomotif")
-
 from ukkomotif.ukkonen import stringer, SuffixTree
 
 import pytest

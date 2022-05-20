@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/bpenteado/ukkomotif")
-
 from ukkomotif.main import compute_kmer_frequencies, compute_kmer_conservation_frequencies, compute_kmer_conservations
 
 import pytest

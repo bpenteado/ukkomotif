@@ -1,6 +1,3 @@
-import sys
-sys.path.append("/Users/bpenteado/ukkomotif")
-
 from click.testing import CliRunner
 
 import ukkomotif.cli.main as ucli
