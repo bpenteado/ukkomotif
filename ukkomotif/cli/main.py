@@ -2,7 +2,7 @@
 
 import click
 
-from ukkomotif.main import stringer as _stringer
+from ukkomotif.ukkonen import stringer as _stringer
 
 @click.group("ukkomotif")
 def main():
