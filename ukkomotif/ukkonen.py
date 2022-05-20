@@ -65,6 +65,8 @@ class SuffixTree:
     
     :param string: text input with strings to be parsed. 
     :param separation_symbol: character that separates strings in the text input.
+
+    :raises ValueError: if input string does not end with separation_symbol.
     """
     def __init__(self, string: str, separation_symbol: str):
         self.root = Node()
