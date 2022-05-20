@@ -1,5 +1,7 @@
 """Utility for reading and parsing DNA and conservation input sequences"""
 
+import os
+
 class Parser:
     """Parser utility class"""
     def __init__(self):
@@ -8,10 +10,14 @@ class Parser:
         self.dna_valid_symbols = "ATCG#"
         self.conservation_valid_symbols = " *#"
 
-    def read(self, file:str) -> str:
-        """Reads input file and saves data for parsing."""
-        with open(file, 'r') as file:
-            sequence = file.read()
+    def read(self, data:str, is_file: bool) -> str:
+        """Reads input data and saves it for parsing."""
+        if is_file:
+            with open(data, 'r') as file:
+                sequence = file.read()
+        else:
+            sequence = data
+        
         return sequence
 
     def parse_sequence(self, type: str, sequence:str, valid_symbols: str, separation_symbol: str):

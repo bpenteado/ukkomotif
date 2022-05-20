@@ -1,5 +1,8 @@
 """Weeder algorithm"""
 
+import os
+print(os.getcwd())
+
 from .ukkonen import SuffixTree, Node
 from typing import Optional
 
@@ -43,3 +46,5 @@ class Weeder:
 if __name__ == "__main__":
     tree = SuffixTree("AAATGGCCGCGCCG#AAATGGCCGCGCCG#GGCTGTTGAGCGCGCGGGA#", "#")
     results = Weeder(tree, 3).patterns
+
+    a = 1
