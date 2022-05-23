@@ -1,14 +1,6 @@
-from ukkomotif.ukkonen import stringer, SuffixTree
+from ukkomotif.ukkonen import SuffixTree
 
 import pytest
-
-def test_stringer():
-    assert isinstance(stringer("hello"), str)
-    assert stringer("hello") == "hello"
-    with pytest.raises(TypeError):
-        stringer(1.1)
-        stringer([1])
-        stringer(1)
 
 def test_suffix_tree():
     test_string_single = "AAATGGCCGCGCCG#"
