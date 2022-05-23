@@ -39,7 +39,3 @@ class Weeder:
                 else:
                     count = tree.count_leaves(edge.child_node)
                 self.patterns[current_path] = count
-
-if __name__ == "__main__":
-    tree = SuffixTree("AAATGGCCGCGCCG#AAATGGCCGCGCCG#GGCTGTTGAGCGCGCGGGA#", "#")
-    results = Weeder(tree, 3).patterns
