@@ -8,6 +8,7 @@ def compute_kmer_frequencies(dna_data: str, kmer_length: int, is_file: Optional[
     dna_seq = parser.read(dna_data, is_file)
     dna_seq = parser.parse_dna_sequence(dna_seq)
     
+    dna_seq.replace("-", "")  # ignore sequence gaps
     suffix_tree = SuffixTree(dna_seq, parser.separation_symbol)
     kmer_frequencies = Weeder(suffix_tree, kmer_length).patterns
     

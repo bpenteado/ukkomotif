@@ -5,7 +5,7 @@ class Parser:
     def __init__(self):
         self.separation_symbol = "#"
         self.conservation_symbol = "*"
-        self.dna_valid_symbols = "ATCG#"
+        self.dna_valid_symbols = "ATCG-#"
         self.conservation_valid_symbols = " *#"
 
     def read(self, data:str, is_file: bool) -> str:

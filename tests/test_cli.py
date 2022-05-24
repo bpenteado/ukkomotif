@@ -7,4 +7,9 @@ runner = CliRunner()
 def test_frequency():
     _result = runner.invoke(ucli.frequency, "AATG# 2 --file False")
     assert _result.exit_code == 0
-    assert _result.output == "Successfully computed motif frequencies!\n"
+    assert _result.output == "AA 1\nAT 1\nTG 1\n"
+
+def test_conservation():
+    _result = runner.invoke(ucli.conservation, "'AAATGGCCGCGCCG#AAATGGCCGCGCCG#GGCTGTTGAGCGCGCGGGA#' '***  *    ** *#***     ***   #*    ***           #' 3 --file False")
+    assert _result.exit_code == 0
+    assert _result.output == "AAA 1.0\nTTG 1.0\nGCG 0.2\n"
