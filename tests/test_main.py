@@ -2,12 +2,12 @@ from ukkomotif.main import compute_kmer_frequencies, compute_kmer_conservation_f
 
 import pytest
 
-test_sequence_data = "AAATGGCCGCGCCG#AAATGGCCGCGCCG#GGCTGTTGAGCGCGCGGGA#"
-test_conservation_data = "***  *    ** *#***     ***   #*    ***           #"
+test_sequence_data = "AAATGGCCGCGCCG--#AAA---TGGC----CGCGCCG#GGCTGTTGAGCGCGCGG-GA#"
+test_conservation_data = "***  *    ** *  #***            ***   #*    ***            #"
 
 def test_compute_kmer_frequencies():
     kmer_frequencies = compute_kmer_frequencies(test_sequence_data, 3, False)
-    assert len(kmer_frequencies) == 20
+    assert len(kmer_frequencies) == 32
     assert kmer_frequencies['AAA'] == 2
     with pytest.raises(KeyError):
         assert kmer_frequencies["GAA"]

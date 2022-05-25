@@ -2,6 +2,8 @@
 
 from typing import Tuple, Optional
 
+from queue import Queue
+
 class Edge:
     """Edge of a Suffix Tree node"""
     def __init__(self, start: int):
@@ -108,7 +110,7 @@ class SuffixTree:
         Inserts current suffix (new edge) after the active point of the tree. 
         If insertion is not made from root, returns node from which insertion was made (condition for suffix link).
         """
-        if self.active_length == 0:  # insert straight at active node
+        if self.active_length == 0 or self.active_edge == None:  # insert straight at active node
             new_edge = Edge(self.step - 1)
             self.active_node.add_edge(new_edge)
             if self.active_node == self.root:
@@ -122,7 +124,7 @@ class SuffixTree:
         """Active point update rule when no insertion is made (suffix is already in the tree)."""
         self.remainder += 1
 
-        if self.active_edge == None or self.active_length == 0: # make sure existing_edge is active_edge
+        if self.active_edge == None: # make sure existing_edge is active_edge
             self.active_edge = existing_edge
 
         self.active_length += 1
@@ -135,9 +137,11 @@ class SuffixTree:
         self.remainder -= 1
         if self.active_length != 0:
             self.active_length -= 1
-        if self.active_length != 0:
+        if self.active_length != 0 and self.remainder != 1:
+            model_edge = Edge(self.step - self.remainder)
+            model_edge.end = self.step - 1
             self.active_edge = self._match_edge(self.active_node, self.string[self.step - self.remainder])
-            self._check_and_canonize(self.active_edge) # canonize suffix if needed
+            self._check_and_canonize(model_edge) # canonize suffix if needed
         else:
             self.active_edge = None
             
@@ -261,12 +265,18 @@ class SuffixTree:
         """
         if node is None: 
             node = self.root
+
+        queue = Queue()
+        queue.put(node)
         count = 0
-        for edge in node.edges:
-            if edge.child_node is None:
-                count += 1
-            else:
-                count += self.count_leaves(edge.child_node)
+        while (not queue.empty()):
+            node = queue.get()
+            for edge in node.edges:
+                if edge.child_node is None:
+                    count += 1
+                else:
+                    queue.put(edge.child_node)
+
         return count
 
     def count_substring(self, substring: str) -> int:
