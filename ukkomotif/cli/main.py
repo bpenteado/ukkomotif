@@ -3,7 +3,7 @@
 import click
 from itertools import islice
 
-from ukkomotif.main import compute_kmer_frequencies, compute_kmer_conservations
+from ..main import compute_kmer_frequencies, compute_kmer_conservations
 
 def _format_dict_to_text(input_dict: dict) -> str:
     formatted_text = ""
