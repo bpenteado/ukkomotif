@@ -1,6 +1,8 @@
 """Weeder algorithm"""
 
-from .ukkonen import SuffixTree, Node
+import sys
+sys.path.append("../ukkomotif")
+from ukkomotif.ukkonen import SuffixTree, Node
 from typing import Optional
 
 class Weeder:
@@ -31,7 +33,7 @@ class Weeder:
                 else:
                     continue
             else:
-                if tree.string[edge.start+remaining_length-1] == tree.symbol:
+                if tree.symbol in tree.string[edge.start : edge.start+remaining_length]:
                     continue
                 current_path += tree.string[edge.start : edge.start+remaining_length]
                 if edge.child_node is None:

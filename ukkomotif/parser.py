@@ -4,9 +4,10 @@ class Parser:
     """Parser utility class"""
     def __init__(self):
         self.separation_symbol = "#"
+        self.gap_symbol = "-"
         self.conservation_symbol = "*"
-        self.dna_valid_symbols = "ATCG-#"
-        self.conservation_valid_symbols = " *#"
+        self.dna_valid_symbols = "ATCG" + self.separation_symbol + self.gap_symbol
+        self.conservation_valid_symbols = " " + self.separation_symbol + self.conservation_symbol
 
     def read(self, data:str, is_file: bool) -> str:
         """Reads input data and saves it for parsing."""
@@ -67,6 +68,8 @@ class Parser:
             if self.separation_symbol in [dna, cons]:
                 if dna != cons:
                     raise ValueError(f"DNA and conservation sequences must be aligned.")
+            if dna == self.gap_symbol:
+                continue
             if cons == self.conservation_symbol:
                 motif += dna
                 in_motif = True

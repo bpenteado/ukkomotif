@@ -38,11 +38,11 @@ def frequency(sequence_data: str, kmer_length: int, file: bool=True):
 @click.argument("conservation_data", nargs=1)
 @click.argument("kmer_length", type=click.INT, nargs=1)
 def conservation(sequence_data, conservation_data, kmer_length, file: bool=True):
-    # try:
-    kmer_conservations = compute_kmer_conservations(sequence_data, conservation_data, kmer_length, file)
-    # except Exception as e:
-    #     click.secho(f"Unable to compute motif conservations: {str(e)}", fg="red")
-    #     return
+    try: 
+        kmer_conservations = compute_kmer_conservations(sequence_data, conservation_data, kmer_length, file)
+    except Exception as e:
+        click.secho(f"Unable to compute motif conservations: {str(e)}", fg="red")
+        return
     return_string = _format_dict_to_text(kmer_conservations)
     click.secho(return_string)
 
