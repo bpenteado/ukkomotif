@@ -1,11 +1,9 @@
-"""Weeder algorithm"""
+"""Weeder algorithm implementation"""
 
 from .ukkonen import SuffixTree, Node
-from typing import Optional
 
 class Weeder:
-    """
-    Computes all kmers of length kmer_length in the Suffix tree, together with their counts.
+    """Computes all kmers of length kmer_length in the Suffix tree, together with their counts.
 
     :param tree: suffix tree built from some input data.
     :param kmer_length: length of kmers to return.
@@ -17,7 +15,7 @@ class Weeder:
         self._run(self.tree, self.tree.root, self.kmer_length, "")
 
     def _run(self, tree: SuffixTree, start_node: Node, kmer_length: int, path: str):
-        """Implements the Weeder algorithm through a depth-first traversal of the tree."""
+        """Implements the Weeder algorithm by depth-first traversal of the tree."""
         for edge in start_node.edges:
             if tree.string[edge.start] == tree.symbol:
                 continue

@@ -29,16 +29,15 @@ class Parser:
         return sequence
 
     def parse_dna_sequence(self, sequence):
-        "Checks input DNA sequence for valid symbols and termination"
+        """Checks input DNA sequence for valid symbols and termination"""
         return self._parse_sequence("DNA", sequence, self.dna_valid_symbols, self.separation_symbol)
 
     def parse_conservation_sequence(self, sequence):
-        "Checks input conservation sequence for valid symbols and termination"
+        """Checks input conservation sequence for valid symbols and termination"""
         return self._parse_sequence("Conservation", sequence, self.conservation_valid_symbols, self.separation_symbol)
 
     def parse_dna_conservation(self, dna_seq:str, conservation_seq: str) -> str:
-        """
-        Retrieves motif conservation data from dna and conservation sequences for input into a Suffix Tree.
+        """Retrieves motif conservation data from dna and conservation sequences for input into a Suffix Tree.
 
         :param dna_seq: DNA sequences concatenated as a single string and separated by separation_symbol.
         :type dna_seq: str
@@ -57,7 +56,7 @@ class Parser:
         # validate input strings
         dna_seq = self.parse_dna_sequence(dna_seq)
         conservation_seq = self.parse_conservation_sequence(conservation_seq)
-        
+
         if len(dna_seq) != len(conservation_seq):
             raise ValueError("DNA and conservation strings must be of same length.")
 

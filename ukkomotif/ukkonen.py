@@ -1,4 +1,4 @@
-"""Ukkonen Suffix Tree for motif discovery basen on genome-wide evolutionary signature."""
+"""Generalized Suffix Tree implementation using Ukkonen's algorithm"""
 
 from typing import Tuple, Optional
 
@@ -15,8 +15,7 @@ class Edge:
         return True
 
     def get_length(self, current_step: int) -> int:
-        """
-        Returns edge length, including for open edges.
+        """Returns edge length, including for open edges.
 
         :param current_step: current step of the Suffix Tree build (Ukkonen algorithm)
         """
@@ -25,8 +24,7 @@ class Edge:
         return self.end - self.start + 1
 
     def split_edge(self, split_index: int, start_index: int) -> 'Node':
-        """
-        Splits edge, adding a child node with two edges (a new one and the second half of the edge that was split) to 
+        """Splits edge, adding a child node with two edges (a new one and the second half of the edge that was split) to 
         the first half of the split edge, and returns the new node.
     
         :param split_index: edge index for split (0 is the first character of the edge)
@@ -62,8 +60,7 @@ class Node:
         self.edges += [edge]
 
 class SuffixTree:
-    """ 
-    Generalized Suffix Tree built with to Ukkonen's algorithm. 
+    """ Generalized Suffix Tree built with to Ukkonen's algorithm. 
     
     :param string: text input with strings to be parsed. 
     :param separation_symbol: character that separates strings in the text input.
@@ -90,7 +87,7 @@ class SuffixTree:
         raise Exception("Edge not found")
     
     def _lookup_edge(self, char) -> Optional[Edge]:
-        """"Checks if an implicit edge already exists at the active point of the Suffix Tree."""
+        """Checks if an implicit edge already exists at the active point of the Suffix Tree."""
         if self.active_length == 0:
             try:
                 return self._match_edge(self.active_node, char)
@@ -106,9 +103,8 @@ class SuffixTree:
         return self.string[self.active_edge.start + self.active_length]
     
     def _insert_suffix(self) -> Optional[Node]:
-        """
-        Inserts current suffix (new edge) after the active point of the tree. 
-        If insertion is not made from root, returns node from which insertion was made (condition for suffix link).
+        """Inserts current suffix (new edge) after the active point of the tree. If insertion is not made from root, 
+        returns node from which insertion was made (condition for suffix link).
         """
         if self.active_length == 0 or self.active_edge == None:  # insert straight at active node
             new_edge = Edge(self.step - 1)
@@ -160,8 +156,7 @@ class SuffixTree:
             self._check_and_canonize(model_edge) # canonize suffix if needed
 
     def _check_and_canonize(self, model_edge: Edge):
-        """
-        Checks if the active point overflows or is at the end of a non-leaf edge and update active point if so.
+        """Checks if the active point overflows or is at the end of a non-leaf edge and update active point if so.
         This is equivalent to Ukkonen's canonize function.
         """
         remaining_edge_start = model_edge.start
@@ -258,8 +253,7 @@ class SuffixTree:
         return match_edge
 
     def count_leaves(self, node: Optional[Node] = None) -> int:
-        """
-        Counts number of leaf nodes below input node
+        """Counts number of leaf nodes below input node
         
         :param node: node below which number of leaves will be counted, defaults to root node.
         """
@@ -280,8 +274,7 @@ class SuffixTree:
         return count
 
     def count_substring(self, substring: str) -> int:
-        """
-        Counts the number of occurences of a substring in the Suffix Tree.
+        """Counts the number of occurences of a substring in the Suffix Tree.
         
         :param substring: substring to query.
         """
