@@ -1,8 +1,6 @@
-import sys
-sys.path.append("../ukkomotif")
-from ukkomotif.parser import Parser
-from ukkomotif.ukkonen import SuffixTree
-from ukkomotif.weeder import Weeder
+from .parser import Parser
+from .ukkonen import SuffixTree
+from .weeder import Weeder
 from typing import Optional
 
 def compute_kmer_frequencies(dna_data: str, kmer_length: int, is_file: Optional[bool] = True) -> dict:

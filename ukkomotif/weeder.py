@@ -1,8 +1,6 @@
 """Weeder algorithm"""
 
-import sys
-sys.path.append("../ukkomotif")
-from ukkomotif.ukkonen import SuffixTree, Node
+from .ukkonen import SuffixTree, Node
 from typing import Optional
 
 class Weeder:
