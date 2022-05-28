@@ -173,7 +173,7 @@ class SuffixTree:
                     self.active_edge = self._match_edge(self.active_node, self.string[remaining_edge_start])
                     self.active_length -= limiting_edge_length
             else:
-                if self.active_length > limiting_edge_length:
+                if self.active_length > limiting_edge_length:  # pragma: no cover, safety exception handling
                     raise Exception("Unexpected error: tree overflow")
                 return
 

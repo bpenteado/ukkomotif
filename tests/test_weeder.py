@@ -22,3 +22,5 @@ def test_weeeder():
         assert weeder_patterns_multiple["AG"]
         assert weeder_patterns_multiple["AAA"]
         assert weeder_patterns_multiple["#"]
+
+    assert len(Weeder(SuffixTree(test_string_single, "#"), 14).patterns.items()) == 1

@@ -26,7 +26,7 @@ def frequency(sequence_data: str, is_file: int, kmer_length: int):
     """Retrieves all motifs of a specified length from a DNA sequence and computes their frequencies."""
     try:
         kmer_frequencies = compute_kmer_frequencies(sequence_data, bool(is_file), kmer_length)
-    except Exception as e:
+    except Exception as e:  # pragma: no cover, general exception handling
         click.secho(f"Unable to compute motif frequencies: {str(e)}", fg="red")
         return
     return_string = _format_dict_to_text(kmer_frequencies)
@@ -43,7 +43,7 @@ def conservation(sequence_data: str, conservation_data: str, is_file: int, kmer_
     """
     try: 
         kmer_conservations = compute_kmer_conservations(sequence_data, conservation_data, bool(is_file), kmer_length)
-    except Exception as e:
+    except Exception as e:  # pragma: no cover, general exception handling
         click.secho(f"Unable to compute motif conservations: {str(e)}", fg="red")
         return
     return_string = _format_dict_to_text(kmer_conservations)

@@ -24,5 +24,7 @@ jobs:
       - name: Install dependencies
         run: |
         python3 -m pip install -e ".[test]" --no-cache-dir
-      - name: Execute tests
-        run: pytest tests/
+      - name: Execute tests and collect coverage
+        run: pytest --cov ukkomotif
+      - name: Upload coverage reports
+        uses: codecov/codecov-action@v3
