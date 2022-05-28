@@ -1,4 +1,4 @@
-name: testing
+name: build
 on:
   push:
     branches:
@@ -23,8 +23,9 @@ jobs:
           key: $/{/{ env.pythonLocation /}/}-$/{/{ hashFiles('setup.py') /}/}-$/{/{ hashFiles('requirements.txt') /}/}
       - name: Install dependencies
         run: |
-        python3 -m pip install -e ".[test]" --no-cache-dir
+          python3 -m pip install -e ".[test]" --no-cache-dir
       - name: Execute tests and collect coverage
-        run: pytest --cov ukkomotif
+        run: |
+          python3 -m pytest --cov ukkomotif
       - name: Upload coverage reports
         uses: codecov/codecov-action@v3

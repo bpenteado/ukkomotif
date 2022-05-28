@@ -3,7 +3,8 @@ from pathlib import Path
 from setuptools import find_packages, setup
 
 test_packages = [
-    "pytest==7.1.2"
+    "pytest==7.1.2",
+    "pytest-cov==3.0.0"
 ]
 
 dev_packages = []
