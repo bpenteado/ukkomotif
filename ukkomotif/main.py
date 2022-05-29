@@ -5,33 +5,7 @@ from .ukkonen import SuffixTree
 from .weeder import Weeder
 from typing import Optional
 
-def compute_kmer_frequencies(dna_data: str, is_file: bool, kmer_length: int) -> dict:
-    """Retrieves all motifs of a specified length from a DNA sequence and computes their frequencies.
-
-    :param dna_data: input dna sequence. May be provided as a path to text file or in raw format (string with 
-        nucleotides).
-    :type dna_data: str
-    :param is_file: indicates if dna_data is a path to a file. If dna_data is raw data, set this parameter to False.
-    :type is_file: bool
-    :param kmer_length: motif length of interest.
-    :type kmer_length: int
-
-    :return: dictionary with motifs as keys and frequencies as values. Sorted in decresing order of frequency.
-    :rtype: dict
-    """
-    parser = Parser()
-    dna_seq = parser.read(dna_data, is_file)
-    dna_seq = parser.parse_dna_sequence(dna_seq)
-    dna_seq = dna_seq.replace("-", "")
-    
-    suffix_tree = SuffixTree(dna_seq, parser.separation_symbol)
-    kmer_frequencies = Weeder(suffix_tree, kmer_length).patterns
-
-    kmer_frequencies = dict(sorted(kmer_frequencies.items(), key = lambda item: item[1], reverse = True))
-
-    return kmer_frequencies
-
-def compute_kmer_conservation_frequencies(dna_data: str, conservation_data: str, is_file: bool, kmer_length: int) -> dict:
+def _compute_kmer_conservation_frequencies(dna_data: str, conservation_data: str, is_file: bool, kmer_length: int) -> dict:
     """Based on conservation sequence, retrieves conserved motifs of a specified length from a DNA sequence and computes 
     their frequencies.
 
@@ -63,6 +37,32 @@ def compute_kmer_conservation_frequencies(dna_data: str, conservation_data: str,
 
     return conserved_kmer_frequencies
 
+def compute_kmer_frequencies(dna_data: str, is_file: bool, kmer_length: int) -> dict:
+    """Retrieves all motifs of a specified length from a DNA sequence and computes their frequencies.
+
+    :param dna_data: input dna sequence. May be provided as a path to text file or in raw format (string with 
+        nucleotides).
+    :type dna_data: str
+    :param is_file: indicates if dna_data is a path to a file. If dna_data is raw data, set this parameter to False.
+    :type is_file: bool
+    :param kmer_length: motif length of interest.
+    :type kmer_length: int
+
+    :return: dictionary with motifs as keys and frequencies as values. Sorted in decresing order of frequency.
+    :rtype: dict
+    """
+    parser = Parser()
+    dna_seq = parser.read(dna_data, is_file)
+    dna_seq = parser.parse_dna_sequence(dna_seq)
+    dna_seq = dna_seq.replace("-", "")
+    
+    suffix_tree = SuffixTree(dna_seq, parser.separation_symbol)
+    kmer_frequencies = Weeder(suffix_tree, kmer_length).patterns
+
+    kmer_frequencies = dict(sorted(kmer_frequencies.items(), key = lambda item: item[1], reverse = True))
+
+    return kmer_frequencies
+
 def compute_kmer_conservations(dna_file: str, conservation_file: str, is_file: bool, kmer_length: int) -> dict:
     """Based on conservation sequence, retrieves conserved motifs of a specified length from a DNA sequence and computes 
     their conservation. Conservation is defined as motif conservation frequency divided by total motif frequency.  
@@ -83,7 +83,7 @@ def compute_kmer_conservations(dna_file: str, conservation_file: str, is_file: b
     :rtype: dict
     """
     kmer_frequencies = compute_kmer_frequencies(dna_file, is_file, kmer_length)
-    conserved_kmer_frequencies = compute_kmer_conservation_frequencies(dna_file, conservation_file, is_file, kmer_length)
+    conserved_kmer_frequencies = _compute_kmer_conservation_frequencies(dna_file, conservation_file, is_file, kmer_length)
 
     kmer_conservations = {}
     for item in conserved_kmer_frequencies.items():
