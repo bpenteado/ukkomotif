@@ -1,4 +1,4 @@
-from ukkomotif.main import compute_kmer_frequencies, compute_kmer_conservation_frequencies, compute_kmer_conservations
+from ukkomotif.main import compute_kmer_frequencies, compute_kmer_conservations
 
 import pytest
 import re
@@ -26,16 +26,6 @@ def test_compute_kmer_frequencies():
     assert kmer_frequencies['AAA'] == len(re.findall('(?=AAA)', full_sequence_data.replace("-","")))
     assert kmer_frequencies['TGC'] == len(re.findall('(?=TGC)', full_sequence_data.replace("-","")))
     assert not any("-" in kmer for kmer in kmer_frequencies.keys())
-
-def test_compute_kmer_conservation_frequencies():
-    kmer_conservation_frequencies = compute_kmer_conservation_frequencies(sample_sequence_data, sample_conservation_data, False, 3)
-    assert len(kmer_conservation_frequencies) == 3
-    assert kmer_conservation_frequencies["AAA"] == 2
-    assert kmer_conservation_frequencies["GCG"] == 1
-    assert kmer_conservation_frequencies["TTG"] == 1
-    assert not any("-" in kmer for kmer in kmer_conservation_frequencies.keys())
-    with pytest.raises(KeyError):
-        assert kmer_conservation_frequencies["GAA"]
 
 def test_compute_kmer_conservations():
     kmer_conservations = compute_kmer_conservations(sample_sequence_data, sample_conservation_data, False, 3)

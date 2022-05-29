@@ -3,7 +3,7 @@
 import click
 from itertools import islice
 
-from ..main import compute_kmer_frequencies, compute_kmer_conservations
+from ..main import compute_kmer_frequencies, _compute_kmer_conservations
 
 def _format_dict_to_text(input_dict: dict) -> str:
     formatted_text = ""
@@ -42,7 +42,7 @@ def conservation(sequence_data: str, conservation_data: str, is_file: int, kmer_
     their conservation. Conservation is defined as motif conservation frequency divided by total motif frequency.
     """
     try: 
-        kmer_conservations = compute_kmer_conservations(sequence_data, conservation_data, bool(is_file), kmer_length)
+        kmer_conservations = _compute_kmer_conservations(sequence_data, conservation_data, bool(is_file), kmer_length)
     except Exception as e:  # pragma: no cover, general exception handling
         click.secho(f"Unable to compute motif conservations: {str(e)}", fg="red")
         return
