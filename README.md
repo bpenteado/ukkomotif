@@ -17,7 +17,7 @@ Ukkomotif also provides standalone services for the implementation and manipulat
 
 ## Core Package Components
 
-![components](_static/components.png)
+![components](static/components.png)
 
 - **main.py**: defines functional endpoints.
     * **computer_kmer_frequency()**: given a DNA sequence and a specified motif length, retrieves all motifs and their frequencies.
