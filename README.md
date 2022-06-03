@@ -2,7 +2,7 @@
 
 ![build](https://github.com/bpenteado/ukkomotif/actions/workflows/build.yml/badge.svg) [![coverage](https://codecov.io/gh/bpenteado/ukkomotif/branch/main/graph/badge.svg?token=IEAQUAHQ68)](https://codecov.io/gh/bpenteado/ukkomotif)
 
-:dna: Discovery of functional genomic motifs based on Ukkonen's suffix tree implementation and the Weeder algorithm.
+:dna: Discovery of functional genomic motifs using Ukkonen's implementatin of a suffix tree and the Weeder algorithm.
 
 ## Why Ukkomotif
 
