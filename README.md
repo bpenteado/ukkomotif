@@ -15,7 +15,7 @@ Functionality is provided through CLI and functional endpoints.
 Ukkomotif also provides standalone services for the implementation and manipulation of suffix trees built with Ukkonen's algorithm.
 
 
-## Core Package Components
+## Core Components
 
 ![components](static/components.png)
 
@@ -61,6 +61,8 @@ CACGTG 0.3489010989010989
 
 To calculate motif frequencies and conservations using the functional endpoints:
 ```python
+from ukkomotif.main import compute_kmer_frequency, compute_kmer_conservation
+
 # using raw data
 sequence = "AAAGCCCCG--#AA---TGGC--CGCGCCG#GGCTGTAGCGC-GA#"
 conservation= "***   **  *#**  *   ***   * * #*      ****  *#"
