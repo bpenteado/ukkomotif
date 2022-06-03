@@ -1,6 +1,6 @@
 # ukkomotif
 
-![build](https://github.com/bpenteado/ukkomotif/actions/workflows/build.yml/badge.svg) [![coverage](https://codecov.io/gh/bpenteado/ukkomotif/branch/main/graph/badge.svg?token=IEAQUAHQ68)](https://codecov.io/gh/bpenteado/ukkomotif)[![docs](https://readthedocs.org/projects/ukkomotif/badge/?version=latest)](https://ukkomotif.readthedocs.io/en/latest/?badge=latest)
+![build](https://github.com/bpenteado/ukkomotif/actions/workflows/build.yml/badge.svg) [![coverage](https://codecov.io/gh/bpenteado/ukkomotif/branch/main/graph/badge.svg?token=IEAQUAHQ68)](https://codecov.io/gh/bpenteado/ukkomotif) [![docs](https://readthedocs.org/projects/ukkomotif/badge/?version=latest)](https://ukkomotif.readthedocs.io/en/latest/?badge=latest)
 
 Discovery of functional genomic motifs using Ukkonen's implementatin of a suffix tree and the Weeder algorithm.
 
