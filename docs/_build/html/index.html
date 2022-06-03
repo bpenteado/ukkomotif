@@ -3,10 +3,10 @@
   <head><meta charset="utf-8"/>
     <meta name="viewport" content="width=device-width,initial-scale=1"/>
     <meta name="color-scheme" content="light dark"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
-<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" />
+<link rel="index" title="Index" href="genindex.html" /><link rel="search" title="Search" href="search.html" /><link rel="next" title="CLI Reference" href="cli/cli.html" />
 
     <meta name="generator" content="sphinx-4.5.0, furo 2022.04.07"/>
-        <title>Ukkomotif 1.0 documentation</title>
+        <title>Ukkomotif Documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo.css?digest=68f4518137b9aefe99b631505a2064c3c42c9852" />
     <link rel="stylesheet" type="text/css" href="_static/styles/furo-extensions.css?digest=30d1aed668e5c3a91c3e3bf6a60b675221979f0e" />
@@ -123,7 +123,7 @@
       </label>
     </div>
     <div class="header-center">
-      <a href="#"><div class="brand">Ukkomotif 1.0 documentation</div></a>
+      <a href="#"><div class="brand">Ukkomotif Documentation</div></a>
     </div>
     <div class="header-right">
       <div class="theme-toggle-container theme-toggle-header">
@@ -146,7 +146,7 @@
       <div class="sidebar-sticky"><a class="sidebar-brand" href="#">
   
   
-  <span class="sidebar-brand-text">Ukkomotif 1.0 documentation</span>
+  <span class="sidebar-brand-text">Ukkomotif Documentation</span>
   
 </a><form class="sidebar-search-container" method="get" action="search.html" role="search">
   <input class="sidebar-search" placeholder=Search name="q" aria-label="Search">
@@ -154,7 +154,15 @@
   <input type="hidden" name="area" value="default">
 </form>
 <div id="searchbox"></div><div class="sidebar-scroll"><div class="sidebar-tree">
-  
+  <ul class="current">
+<li class="toctree-l1 current current-page"><a class="current reference internal" href="#">Overview</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">API Docs</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="cli/cli.html">CLI Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api/ukkomotif.html">Python API Reference</a></li>
+</ul>
+
 </div>
 </div>
 
@@ -185,18 +193,116 @@
           </label>
         </div>
         <article role="main">
-          <section id="welcome-to-ukkomotif-s-documentation">
-<h1>Welcome to Ukkomotif’s documentation!<a class="headerlink" href="#welcome-to-ukkomotif-s-documentation" title="Permalink to this headline">#</a></h1>
+          <section id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">#</a></h1>
+<p>Discovery of functional genomic motifs based on Ukkonen’s suffix tree implementation and the Weeder algorithm.</p>
+<section id="why-ukkomotif">
+<h2>Why Ukkomotif<a class="headerlink" href="#why-ukkomotif" title="Permalink to this headline">#</a></h2>
+<p>Motifs that are evolutionarily conserved in the genome are high-potential candidates for relevant genomic functionality.</p>
+<p>Ukkomotif is a modular toolchain for the discovery of functional genomic motifs using genome-wide evolutionary signatures. It allows users to compute the frequency and conservation of kmers (motifs) of any length by providing genomic sequences together with their conservation signatures.</p>
+<p>Functionality is provided through CLI and functional endpoints.</p>
+<p>Ukkomotif also provides standalone services for the implementation and manipulation of suffix trees built with Ukkonen’s algorithm.</p>
+</section>
+<section id="core-package-components">
+<h2>Core Package Components<a class="headerlink" href="#core-package-components" title="Permalink to this headline">#</a></h2>
+<p><img alt="components" src="_images/components.png"/></p>
+<ul class="simple">
+<li><p><strong>main.py</strong>: defines functional endpoints.</p>
+<ul>
+<li><p><strong>computer_kmer_frequency()</strong>: given a DNA sequence and a specified motif length, retrieves all motifs and their frequencies.</p></li>
+<li><p><strong>compute_kmer_conservation()</strong>: given a DNA sequence, a conservation sequence, and a specified motif length, retrieves all conserved motifs and their conservation. Conservation is defined as motif conservation frequency divided by total motif frequency.</p></li>
+</ul>
+</li>
+<li><p><strong>cli/main.py</strong>: defines command line endpoints.</p>
+<ul>
+<li><p><strong>ukkomotif frequency</strong>: CLI endpoint for compute_kmer_frequency()</p></li>
+<li><p><strong>ukkomotif conservation</strong>: CLI endpoint for compute_kmer_conservation()</p></li>
+</ul>
+</li>
+<li><p><strong>parser.py</strong>: verifies and sanitizes raw user data.</p></li>
+<li><p><strong>ukkonen.py</strong>: suffix tree implementation based on Ukkonen’s online algorithm.</p></li>
+<li><p><strong>weeder.py</strong>: Wedder algorithm implementation. Given a suffix tree and a substring length, finds all substrings of the specific length and computes their frequency.</p></li>
+</ul>
+</section>
+<section id="usage">
+<h2>Usage<a class="headerlink" href="#usage" title="Permalink to this headline">#</a></h2>
+<p>To calculate motif frequencies using the CLI, use <a class="reference internal" href="cli/cli.html#ukkomotif-frequency"><span class="std std-ref"><code class="docutils literal notranslate"><span class="pre">ukkomotif</span> <span class="pre">frequency</span></code></span></a>.</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ukkomotif frequency <span class="s2">"AAAGCCCCG--#AA---TGGC--CGCGCCG#GGCAGCGC-GA#"</span> <span class="m">0</span> <span class="m">3</span> --list <span class="m">5</span>
+<span class="go">GCC 3</span>
+<span class="go">GCG 3</span>
+<span class="go">CCG 3</span>
+<span class="go">CGC 3</span>
+<span class="go">AGC 2</span>
+<span class="gp">$ </span>ukkomotif frequency PATH_TO_DNA <span class="m">1</span> <span class="m">4</span> --list <span class="m">3</span>
+<span class="go">AAAA 70931</span>
+<span class="go">TTTT 69711</span>
+<span class="go">ATAT 42771</span>
+</pre></div>
+</div>
+<p>To calculate motif conservations using the CLI, use <a class="reference internal" href="cli/cli.html#ukkomotif-conservation"><span class="std std-ref"><code class="docutils literal notranslate"><span class="pre">ukkomotif</span> <span class="pre">conservation</span></code></span></a>:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>ukkomotif conservation <span class="s2">"ATCG--#AAAT#"</span> <span class="s2">" ** **# ***#"</span> <span class="m">0</span> <span class="m">2</span> --list <span class="m">3</span>
+<span class="go">TC 1.0</span>
+<span class="go">AA 0.5</span>
+<span class="go">AT 0.5</span>
+<span class="gp">$ </span>ukkomotif conservation PATH_TO_DNA PATH_TO_CONSERVATION <span class="m">1</span> <span class="m">6</span> --list <span class="m">5</span>
+<span class="go">TACCCG 0.4327731092436975</span>
+<span class="go">CGGGTA 0.43243243243243246</span>
+<span class="go">CCGGGT 0.38524590163934425</span>
+<span class="go">ACCCGG 0.36860068259385664</span>
+<span class="go">CACGTG 0.3489010989010989</span>
+</pre></div>
+</div>
+<p>To calculate motif frequencies and conservations using the <a class="reference internal" href="api/ukkomotif.html#functional-endpoints"><span class="std std-ref">functional endpoints</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># using raw data</span>
+<span class="n">sequence</span> <span class="o">=</span> <span class="s2">"AAAGCCCCG--#AA---TGGC--CGCGCCG#GGCTGTAGCGC-GA#"</span>
+<span class="n">conservation</span><span class="o">=</span> <span class="s2">"***   **  *#**  *   ***   * * #*      ****  *#"</span>
+<span class="n">kmer_frequencies</span> <span class="o">=</span> <span class="n">compute_kmer_frequency</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">kmer_conservations</span> <span class="o">=</span> <span class="n">compute_kmer_conservation</span><span class="p">(</span><span class="n">sequence</span><span class="p">,</span> <span class="n">conservation</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+
+<span class="c1"># using data in files</span>
+<span class="n">seq_path</span> <span class="o">=</span> <span class="s2">"tests/allinter"</span>
+<span class="n">cons_path</span> <span class="o">=</span> <span class="s2">"tests/allintercons"</span>
+<span class="n">frequencies</span> <span class="o">=</span> <span class="n">compute_kmer_frequency</span><span class="p">(</span><span class="n">seq_path</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+<span class="n">conservations</span> <span class="o">=</span> <span class="n">compute_kmer_conservation</span><span class="p">(</span><span class="n">seq_path</span><span class="p">,</span> <span class="n">cons_path</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="mi">3</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>To build a suffix tree, use [<code class="docutils literal notranslate"><span class="pre">SuffixTree</span></code>] from the <a class="reference internal" href="api/ukkomotif.html#ukkonen-module"><span class="std std-ref">ukkonen module</span></a>:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">ukkomotif.ukkonen</span> <span class="kn">import</span> <span class="n">SuffixTree</span>
+
+<span class="n">string</span> <span class="o">=</span> <span class="s2">"AGTAGGT#TAGATCCGC#CTCGCGC#"</span>
+<span class="n">tree</span> <span class="o">=</span> <span class="n">SuffixTree</span><span class="p">(</span><span class="n">string</span><span class="p">,</span> <span class="s2">"#"</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+<section id="data-inputs">
+<span id="id1"></span><h2>Data Inputs<a class="headerlink" href="#data-inputs" title="Permalink to this headline">#</a></h2>
+<p>Users need to provide a <code class="docutils literal notranslate"><span class="pre">dna_sequence</span></code> and a <code class="docutils literal notranslate"><span class="pre">conservation_sequence</span></code>.</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">dna_sequence</span></code>: single string with genomic sequences separated by “#”.</p>
+<ul>
+<li><p>Valid characters: “ATCG-#”</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">conservation_sequence</span></code>: single string with conservation sequences separated by “#”. An asterisk “*” marks a conserved nucleotide and a space ” ” marks a non-conserved nucleotide.</p>
+<ul>
+<li><p>Valid character: ” *#”</p></li>
+</ul>
+</li>
+<li><p><code class="docutils literal notranslate"><span class="pre">dna_sequence</span></code> and <code class="docutils literal notranslate"><span class="pre">conservation_sequence</span></code> need to be aligned and of same length.</p></li>
+<li><p>Ukkomotif verifies inputs and raises errors in case of badly formatted inputs.</p></li>
+</ul>
+</section>
+<section id="getting-started">
+<h2>Getting Started<a class="headerlink" href="#getting-started" title="Permalink to this headline">#</a></h2>
+<p>To begin wrangling DNA, simply:</p>
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp">$ </span>python3 -m pip install ukkomotif
+</pre></div>
+</div>
+<div class="toctree-wrapper compound">
+</div>
 <div class="toctree-wrapper compound">
 </div>
 </section>
-<section id="indices-and-tables">
-<h1>Indices and tables<a class="headerlink" href="#indices-and-tables" title="Permalink to this headline">#</a></h1>
-<ul class="simple">
-<li><p><a class="reference internal" href="genindex.html"><span class="std std-ref">Index</span></a></p></li>
-<li><p><a class="reference internal" href="py-modindex.html"><span class="std std-ref">Module Index</span></a></p></li>
-<li><p><a class="reference internal" href="search.html"><span class="std std-ref">Search Page</span></a></p></li>
-</ul>
 </section>
 
         </article>
@@ -204,7 +310,15 @@
       <footer>
         
         <div class="related-pages">
-          
+          <a class="next-page" href="cli/cli.html">
+              <div class="page-info">
+                <div class="context">
+                  <span>Next</span>
+                </div>
+                <div class="title">CLI Reference</div>
+              </div>
+              <svg><use href="#svg-arrow-right"></use></svg>
+            </a>
           
         </div>
         <div class="bottom-of-page">
@@ -238,8 +352,16 @@
         <div class="toc-tree-container">
           <div class="toc-tree">
             <ul>
-<li><a class="reference internal" href="#">Welcome to Ukkomotif’s documentation!</a></li>
-<li><a class="reference internal" href="#indices-and-tables">Indices and tables</a></li>
+<li><a class="reference internal" href="#">Overview</a><ul>
+<li><a class="reference internal" href="#why-ukkomotif">Why Ukkomotif</a></li>
+<li><a class="reference internal" href="#core-package-components">Core Package Components</a></li>
+<li><a class="reference internal" href="#usage">Usage</a></li>
+<li><a class="reference internal" href="#data-inputs">Data Inputs</a></li>
+<li><a class="reference internal" href="#getting-started">Getting Started</a><ul>
+</ul>
+</li>
+</ul>
+</li>
 </ul>
 
           </div>
