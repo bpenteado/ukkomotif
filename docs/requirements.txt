@@ -40,6 +40,5 @@ sphinxcontrib-serializinghtml==1.1.5
 sphinxemoji==0.2.0
 tomli==2.0.1
 typing_extensions==4.2.0
-ukkomotif==1.0
 urllib3==1.26.9
 zipp==3.8.0
