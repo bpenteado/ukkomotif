@@ -31,7 +31,7 @@ Ukkomotif also provides standalone services for the implementation and manipulat
 
 ## Usage
 
-To calculate motif frequencies using the CLI, use `ukkomotif frequency`.
+To calculate motif frequencies using the CLI, use [`ukkomotif frequency`](https://ukkomotif.readthedocs.io/en/latest/cli/cli.html#ukkomotif-frequency).
 ```console
 $ ukkomotif frequency "AAAGCCCCG--#AA---TGGC--CGCGCCG#GGCAGCGC-GA#" 0 3 --list 5
 GCC 3
@@ -45,7 +45,7 @@ TTTT 69711
 ATAT 42771
 ```
 
-To calculate motif conservations using the CLI, use `ukkomotif conservation`:
+To calculate motif conservations using the CLI, use [`ukkomotif conservation`](https://ukkomotif.readthedocs.io/en/latest/cli/cli.html#ukkomotif-conservation):
 ```console
 $ ukkomotif conservation "ATCG--#AAAT#" " ** **# ***#" 0 2 --list 3
 TC 1.0
@@ -59,7 +59,7 @@ ACCCGG 0.36860068259385664
 CACGTG 0.3489010989010989
 ```
 
-To calculate motif frequencies and conservations using the functional endpoints:
+To calculate motif frequencies and conservations using the [functional endpoints](https://ukkomotif.readthedocs.io/en/latest/api/ukkomotif.html#ukkomotif-main-module):
 ```python
 from ukkomotif.main import compute_kmer_frequency, compute_kmer_conservation
 
@@ -76,7 +76,7 @@ frequencies = compute_kmer_frequency(seq_path, True, 3)
 conservations = compute_kmer_conservation(seq_path, cons_path, True, 3)
 ```
 
-To build a suffix tree, use `SuffixTree` from the ukkonen module:
+To build a suffix tree, use `SuffixTree` from the [ukkonen module](https://ukkomotif.readthedocs.io/en/latest/api/ukkomotif.html#ukkomotif-ukkonen-module):
 ```python
 from ukkomotif.ukkonen import SuffixTree
 
